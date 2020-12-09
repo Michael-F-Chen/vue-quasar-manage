@@ -1,11 +1,11 @@
-## 性能优化
-最近发现项目在```github```上启动速度达到恐怖的 8 秒，在```gitee```的启动速度也很慢，3.04 秒，首页动画是通过 CDN 加载进来的，所以没有算在内，```github```8 秒，国外吧，那也没啥说的
+## 体积性能优化
+最近发现项目在```github```上启动速度达到恐怖的 8 秒，在```gitee```的启动速度也很慢，3.04 秒，首页动画是通过 CDN 加载进来的，所以没有算在内，```github```8秒，国外吧，那也没啥好说的
 
 但是```gitee```的启动速度 3.04 秒
 
 不得了，我强迫症犯了，就好比有人在我的耳边对我说：这个世界上根本没有奥特曼！！！
 
-难受，淦  o(ﾟДﾟ)っ！
+难受，淦 o(ﾟДﾟ)っ！
 
 本来想着项目在```github```/```gitee```上部署后，这两个网站都自带```GZIP```压缩了，所以打包时就用了最原始的打包方式，方便其他同学根据自己的需求自定义打包配置。好家伙，咩想到这么慢。
 
@@ -24,7 +24,7 @@
 | 5.05 MB（路由懒加载失败 ） | 2 MB （没有按需引入） | 1MB（路由懒加载失败） |
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/20201208235651994.gif#pic_center)
 
-### 找到问题后使用通用的优化方法就行优化，常规的性能优化一般有五种：
+### 找到问题后使用通用的优化方法进行优化，常规的性能优化一般有五种：
 
 1. 单组件 / UI 组件按需引入
 2. 路由懒加载
@@ -160,7 +160,7 @@ module.exports = {
 配置```Gzip```压缩之后，需要你的服务器支持```Gzip```格式文件（浏览器支持，服务器不一定默认支持）
 
 我用的比较多的是```Nginx```、```express```和```tomcat```，因此自列出这些服务器的配置方式，其他服务器都是异曲同工
-### Nginx 开启```Gzip```支持
+#### Nginx 开启```Gzip```支持
 在```conf/nginx.conf```中添加如下配置
 
 ```sh
@@ -174,7 +174,7 @@ module.exports = {
 		
 	# 是否在 http header 中添加 Vary: Accept-Encoding 建议开启
 	gzip_vary on;
-	 ......
+   ......
 }
 ```
 
@@ -186,7 +186,7 @@ module.exports = {
 网络上虽然有使用```ttf```压缩的痕迹，但是都是一笔带过。还是自己太菜了......
 :::
 
-### Express 开启```Gzip```支持
+#### Express 开启```Gzip```支持
 安装对应依赖
 ```js
 npm install compression --save
@@ -200,7 +200,7 @@ var app = express();
 app.use(compression());
 ```
 
-### Tomcat 开启```Gzip```支持
+#### Tomcat 开启```Gzip```支持
 修改 tomcat 8 的 ```server.xml```，找到默认端口的位置，在后面添加配置如下
 ```html
 <Connector connectionTimeout="20000" port="8080" protocol="HTTP/1.1" redirectPort="8443"
@@ -208,8 +208,7 @@ app.use(compression());
 	compressableMimeType="text/html,text/xml,text/css,application/javascript,text/plain"/>
 ```
 
-#### 体积性能优化后的结果
-
+### 体积性能优化后的结果
 |  | 未优化 | 优化后 | Gzip 压缩后 |
 |--|--|--|--|--|
 | ````chunk-vendors.js````| 5.05 MB | 2.66 MB | 350 KB |
@@ -217,14 +216,28 @@ app.use(compression());
 | ````quasar````| 1MB | 294.62 KB | 44.39 KB |
 
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/20201208234226813.gif#pic_center)
-这一次的性能优化到这就结束了，来看看效果
+### 这一次的性能优化到这就结束了，来看看效果
+|  | 优化前 | 优化后 |
+|--|--|--|
+| ```Github```| 8s 左右 |3.5s 左右|
+| ```Gitee```| 3s 左右 | 1s 左右 |
 
-这是 v1.0.1 beta 版本在 gitee 上的请求速度，减去首屏动画 CDN 下载的耗时，速度在 3s 左右
+
+这是 v1.0.1 beta 版本的在```Gitee```上的访问速度，减去首屏动画 CDN 下载的耗时，速度在 3s 左右
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/20201209001308453.png#pic_center)
-这是本次优化之后，在我的 Ngnix 上部署后的效果
+性能优化后在```Gitee```上访问的速度：
 
+![在这里插入图片描述](https://img-blog.csdnimg.cn/20201209113921634.png#pic_center)
+可以看到响应时间从 3.76 s 提升到了 1.20 s
+
+性能优化后在```Github```上的访问速度
+
+![在这里插入图片描述](https://img-blog.csdnimg.cn/20201209113811473.png#pic_center)
+可以看到响应时间从 8 s 提升到了 3.57 s
+
+在我自己的 Ngnix 上部署后的速度，减去首屏动画 CDN 下载的耗时 167 ms，优化后的速度为 347 ms
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/20201209004210479.png#pic_center)
-从 3.76 s 到 541 ms ┗( ▔, ▔ )┛
 
-### 那天我拿着手电筒对着电视照亮迪迦奥特曼的能量指示器，助他战胜基里艾洛德星人
+### 那天我拿着手电筒对着电视照亮迪迦奥特曼的能量指示器，助他战胜基里艾洛德星人 ┗( ▔, ▔ )┛
 ### 我，也变成了光 ~ 
+
