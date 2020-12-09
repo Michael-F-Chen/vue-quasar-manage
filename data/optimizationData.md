@@ -227,7 +227,7 @@ app.use(compression())
 性能优化后在```Gitee```上访问的速度：
 
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/20201209113921634.png#pic_center)
-可以看到响应时间从 3.76 s 提升到了 1.20 s
+可以看到响应时间从 3.76 s 提升到了 1.07 s （ 减去首屏动画 CDN 下载的耗时 ）
 
 性能优化后在```Github```上的访问速度
 
