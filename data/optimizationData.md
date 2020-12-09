@@ -111,12 +111,12 @@ module.exports = {
 }
 ```
 ### 5、使用```Gzip```压缩文件
-```Gzip```是默认绝大部分浏览器都支持的文件格式，```Gzip```能将默认打包生成的大文件压缩成小文件，从而提高项目的响应速度。
+```Gzip```是绝大部分浏览器都支持的文件格式，```Gzip```能将打包生成的大文件压缩成```Gzip```格式的小文件，从而提高项目的响应速度。
 
 首先需要引入```Webpack```的```Gzip```压缩插件，在```package.json```中插入
 
-:::tip
-别用太高版本的```compression-webpack-plugin```，会出现未知错误，本人深受其害，默认```npm```安装最新版，好家伙，花我半天去找问题。
+::: warning
+别用太高版本的```compression-webpack-plugin```，会出现未知错误，本人深受其害，当时默认```npm```安装最新版，好家伙，花我半天去找问题。
 :::
 
 ```js
@@ -141,8 +141,8 @@ module.exports = {
           algorithm: 'gzip',
           test: /\.(js|css|woff|woff2|svg)$/, // 那些文件会被压缩
           threshold: 10240, // 对超过10k的数据压缩
-          deleteOriginalAssets: false, // 不删除源文件
-          minRatio: 0.8 // 压缩比
+          deleteOriginalAssets: false, // 不删除压缩原文件，如果浏览器不支持 gzip
+          minRatio: 0.8 // 如果压缩比小于 0.8 则不压缩该文件
         })
       )
 
@@ -157,7 +157,7 @@ module.exports = {
   ......
 }
 ```
-配置```Gzip```压缩之后，需要你的服务器支持```Gzip```格式文件（浏览器支持，服务器不一定默认支持）
+### 配置```Gzip```压缩之后，需要你的服务器支持```Gzip```格式文件（浏览器支持，服务器不一定默认支持）
 
 我用的比较多的是```Nginx```、```express```和```tomcat```，因此自列出这些服务器的配置方式，其他服务器都是异曲同工
 #### Nginx 开启```Gzip```支持
@@ -180,10 +180,10 @@ module.exports = {
 
 其中```gzip_types```的配置类型可以在```mime.types```文件里找到对应的类型，```mime.types```可以把它当做是浏览器支持的格式声明计划，因此修改其中的类型值，也是无用的
 
-:::tip
+:::warning
 不过我在做某个项目时，在```mime.types```文件没有发现```ttf```格式文件的支持类型
-因此```ttf```压缩后的```Gzip```文件在服务器中并没有生效
-网络上虽然有使用```ttf```压缩的痕迹，但是都是一笔带过。还是自己太菜了......
+因此```ttf```压缩后的```Gzip```文件在 Nignx 服务器中并没有生效
+网络上虽然有 Nignx 服务器使用```ttf```压缩的痕迹，但是都是一笔带过,没有得到实质的帮助。还是自己太菜了......
 :::
 
 #### Express 开启```Gzip```支持
@@ -195,9 +195,8 @@ npm install compression --save
 ```js
 var app = express()
 var compression = require('compression')
-var app = express();
 // 启用gzip
-app.use(compression());
+app.use(compression())
 ```
 
 #### Tomcat 开启```Gzip```支持
